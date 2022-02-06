@@ -33,21 +33,21 @@ public class stepsDefinition_APILeads extends DSL {
 		if (metodo.toUpperCase().contains("POST")) {
 			DSL.response = DSL.request.body(getBody()).when().post(DSL.urlBase + DSL.recurso + "?" + DSL.autorizacao)
 					.andReturn();
+			setFirstResponse(DSL.response);
 		} else if (metodo.toUpperCase().contains("PUT")) {
 			DSL.response = DSL.request.body(getBody()).when()
-					.put(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao).andReturn();
+					.put(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).andReturn();
 		} else if (metodo.toUpperCase().contains("GET")) {
-			DSL.response = DSL.request
-					.get(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao + "&" + getParam())
+			DSL.response = DSL.request.body(getBody()).when().get(
+					DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
 					.andReturn();
 		} else if (metodo.toUpperCase().contains("PATCH")) {
 			DSL.response = DSL.request.body(getBody()).when()
 					.patch(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao).andReturn();
 		} else if (metodo.toUpperCase().contains("DELETE")) {
-			DSL.response = DSL.request.when().delete(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao)
-					.andReturn();
+			DSL.response = DSL.request.when()
+					.delete(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).andReturn();
 		} else {
-			System.out.println("O valor selecionado nao corresponde a um metodo valido para a API");
 			Assert.fail("O valor selecionado nao corresponde a um metodo valido para a API");
 		}
 	}
@@ -58,12 +58,9 @@ public class stepsDefinition_APILeads extends DSL {
 		try {
 			Assert.assertEquals(codigo, DSL.response.getStatusCode());
 		} catch (Exception e) {
-			System.out.println("O status code retornado nao esta correto. Esperado: " + codigo + " Retornado: "
-					+ DSL.response.getStatusCode());
 			Assert.fail("O status code retornado nao esta correto. Esperado: " + codigo + " Retornado: "
 					+ DSL.response.getStatusCode());
 		}
-
 	}
 
 	@And("o tempo de resposta deve ser menor que {long} segundos")
@@ -166,7 +163,6 @@ public class stepsDefinition_APILeads extends DSL {
 		} catch (Exception e) {
 			Assert.fail("O response body nao esta de acordo com a documentacao");
 		}
-
 		setId(nodeData.getInt("id"));
 	}
 
@@ -191,16 +187,14 @@ public class stepsDefinition_APILeads extends DSL {
 	@Then("o campo {string} deve ser atualizado")
 	public void o_campo_deve_ser_atualizado(String position) {
 
-		DSL.response = DSL.request.when()
-				.get(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao + "&" + getParam()).andReturn();
+		DSL.response = DSL.request.body(getBody()).when()
+				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
+				.andReturn();
 		JSONObject responseBody = new JSONObject(DSL.response.body().asString());
 		JSONObject nodeData = responseBody.getJSONObject("data");
+
 		try {
-
 			assertTrue(position.equals(nodeData.get("position")));
-
-			setId(nodeData.getInt("id"));
-
 		} catch (Exception e) {
 			Assert.fail("O campo nao foi atualizado");
 		}
@@ -211,13 +205,13 @@ public class stepsDefinition_APILeads extends DSL {
 	// nao enviou a requisicao
 	@And("o leads deve ser excluido")
 	public void o_leads_deve_ser_excluido() {
-			DSL.response = DSL.request.when()
-					.get(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao + "&" + getParam())
-					.andReturn();
-			try {
-				Assert.assertEquals(404, DSL.response.getStatusCode());
+		DSL.response = DSL.request.body(getBody()).when()
+				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
+				.andReturn();
+		try {
+			Assert.assertEquals(404, DSL.response.getStatusCode());
 		} catch (Exception e) {
-			Assert.fail("O leads ainda consta na base de dado");
+			Assert.fail("O leads ainda consta na base de dados");
 		}
 	}
 

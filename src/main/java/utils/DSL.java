@@ -12,9 +12,22 @@ public class DSL {
 	private String body;
 	private String param;
 	private int id;
+	public static String urlBase = "https://api.hunter.io";
+	public static String recurso = "/v2/leads";
+	public static String autorizacao = "api_key=04a087df62a592296cad8ad4b37f895986c88a47";
+	public static Response response;
+	public static Response firstResponse;
+
+	public static RequestSpecification request;
 
 	public int getId() {
 		JSONObject responseBody = new JSONObject(response.body().asString());
+		JSONObject nodeData = responseBody.getJSONObject("data");
+		return nodeData.getInt("id");
+	}
+
+	public int getFirstResponseId() {
+		JSONObject responseBody = new JSONObject(firstResponse.body().asString());
 		JSONObject nodeData = responseBody.getJSONObject("data");
 		return nodeData.getInt("id");
 	}
@@ -39,11 +52,13 @@ public class DSL {
 		this.param = param;
 	}
 
-	public static String urlBase = "https://api.hunter.io";
-	public static String recurso = "/v2/leads";
-	public static String autorizacao = "api_key=04a087df62a592296cad8ad4b37f895986c88a47";
-	public static Response response;
-	public static RequestSpecification request;
+	public static Response getFirstResponse() {
+		return firstResponse;
+	}
+
+	public static void setFirstResponse(Response firstResponse) {
+		DSL.firstResponse = firstResponse;
+	}
 
 	public static String gerarAleatorio(int tam, String tipo) {
 		char[] elementosMisto = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
