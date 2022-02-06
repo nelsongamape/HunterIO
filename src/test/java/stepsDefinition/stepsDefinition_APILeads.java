@@ -12,7 +12,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.response.Response;
 import utils.DSL;
 
 public class stepsDefinition_APILeads extends DSL {
@@ -189,8 +188,8 @@ public class stepsDefinition_APILeads extends DSL {
 	// metodo nao funcionou. JSONException: A JSONObject text must begin with '{' at
 	// 0 [character 1 line 1]. nao consegui descobrir pq nao enviou
 	// uma nova requisicao GET para poder validar os dados :/
-	@And("o campo position deve ser atualizado para {string}")
-	public void o_campo_position_deve_ser_atualizado_para(String position) {
+	@Then("o campo {string} deve ser atualizado")
+	public void o_campo_deve_ser_atualizado(String position) {
 
 		DSL.response = DSL.request.when()
 				.get(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao + "&" + getParam()).andReturn();
@@ -212,11 +211,11 @@ public class stepsDefinition_APILeads extends DSL {
 	// nao enviou a requisicao
 	@And("o leads deve ser excluido")
 	public void o_leads_deve_ser_excluido() {
-		try {
 			DSL.response = DSL.request.when()
 					.get(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao + "&" + getParam())
 					.andReturn();
-			Assert.assertEquals(404, DSL.response.getStatusCode());
+			try {
+				Assert.assertEquals(404, DSL.response.getStatusCode());
 		} catch (Exception e) {
 			Assert.fail("O leads ainda consta na base de dado");
 		}
