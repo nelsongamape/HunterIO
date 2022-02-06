@@ -2,17 +2,21 @@ package utils;
 
 import java.util.Random;
 
+import org.json.JSONObject;
+
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 public class DSL {
 
-	private  String body;
-	private  String param;
+	private String body;
+	private String param;
 	private int id;
 
 	public int getId() {
-		return id;
+		JSONObject responseBody = new JSONObject(response.body().asString());
+		JSONObject nodeData = responseBody.getJSONObject("data");
+		return nodeData.getInt("id");
 	}
 
 	public void setId(int id) {

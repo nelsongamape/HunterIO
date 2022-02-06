@@ -11,8 +11,8 @@ Feature: HunterIO_APILeads
 		And a estrutura de response body esteja conforme a documentacao
 
      Examples: 
-      |confidence_score|metodo   |id|codigo   |tempo  |
-      |0               |"POST"   |""| 201     |5      |
+      |confidence_score|metodo   |codigo   |tempo  |
+      |0               |"POST"   | 201     |5      |
       
 @Tc02
   Scenario: Requisicao de criacao de leads somente com os campos obrigatorios preenchidos
@@ -25,26 +25,25 @@ Feature: HunterIO_APILeads
      Examples: 
       |confidence_score|metodo   |codigo   |tempo  |
       |100               |"POST" | 201     |5      |
-      |50                |"POST" | 201     |5      |
       
   @Tc03
   Scenario: Requisicao de atualizacao de leads apenas com os campos obrigatorios preenchidos
     Given que sejam enviados apenas os campos obrigatorios do request body preenchidos e o campo position com valor igual a <position>
-    When executar uma solicitacao <metodo> para um id valido
+    When executar uma solicitacao <metodo>
     Then deve ser recebido o codigo de retorno HTTP <codigo>
     And o tempo de resposta deve ser menor que <tempo> segundos
-    And o campo position deve ser atualizado para <position>
-		
+   		
      Examples: 
      
-   |position       |metodo   |codigo   |tempo  |
-   |"Manager"      |"PUT"    | 204     |5      |
+   |position  |metodo   |codigo   |tempo  |
+   |"Manager" |"PUT"    | 204     |5      |
 
   @Tc04
   Scenario: Requisicao de atualizacao de leads apenas com os campos obrigatorios preenchidos
-    When executar uma solicitacao <metodo> para um id valido
+    When executar uma solicitacao <metodo>
     Then deve ser recebido o codigo de retorno HTTP <codigo>
     And o tempo de resposta deve ser menor que <tempo> segundos
+    And o leads deve ser excluido
 		
      Examples: 
      
