@@ -1,5 +1,6 @@
 package stepsDefinition;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
@@ -12,6 +13,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.RestAssured;
 import utils.DSL;
 
 public class stepsDefinition_APILeads extends DSL {
@@ -38,9 +40,9 @@ public class stepsDefinition_APILeads extends DSL {
 			DSL.response = DSL.request.body(getBody()).when()
 					.put(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).andReturn();
 		} else if (metodo.toUpperCase().contains("GET")) {
-			DSL.response = DSL.request.body(getBody()).when().get(
-					DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
-					.andReturn();
+			DSL.response = RestAssured.given().when()
+					.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).then()
+					.extract().response();
 		} else if (metodo.toUpperCase().contains("PATCH")) {
 			DSL.response = DSL.request.body(getBody()).when()
 					.patch(DSL.urlBase + DSL.recurso + "/" + getId() + "?" + DSL.autorizacao).andReturn();
@@ -181,33 +183,27 @@ public class stepsDefinition_APILeads extends DSL {
 		setBody("{\r\n    \"position\": \"" + position + "\"\r\n}");
 	}
 
-	// metodo nao funcionou. JSONException: A JSONObject text must begin with '{' at
-	// 0 [character 1 line 1]. nao consegui descobrir pq nao enviou
-	// uma nova requisicao GET para poder validar os dados :/
 	@Then("o campo {string} deve ser atualizado")
 	public void o_campo_deve_ser_atualizado(String position) {
 
-		DSL.response = DSL.request.body(getBody()).when()
-				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
-				.andReturn();
+		DSL.response = RestAssured.given().when()
+				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).then().extract()
+				.response();
 		JSONObject responseBody = new JSONObject(DSL.response.body().asString());
 		JSONObject nodeData = responseBody.getJSONObject("data");
 
 		try {
-			assertTrue(position.equals(nodeData.get("position")));
+			assertEquals(position, nodeData.get("position"));
 		} catch (Exception e) {
 			Assert.fail("O campo nao foi atualizado");
 		}
 	}
 
-	// metodo nao funcionou pelo mesmo motivo acima. JSONException: A JSONObject
-	// text must begin with '{' at 0 [character 1 line 1]. nao consegui descobrir pq
-	// nao enviou a requisicao
 	@And("o leads deve ser excluido")
 	public void o_leads_deve_ser_excluido() {
-		DSL.response = DSL.request.body(getBody()).when()
-				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao + "&" + getParam())
-				.andReturn();
+		DSL.response = RestAssured.given().when()
+				.get(DSL.urlBase + DSL.recurso + "/" + getFirstResponseId() + "?" + DSL.autorizacao).then().extract()
+				.response();
 		try {
 			Assert.assertEquals(404, DSL.response.getStatusCode());
 		} catch (Exception e) {

@@ -32,7 +32,7 @@ Feature: HunterIO_APILeads
     When executar uma solicitacao <metodo>
     Then deve ser recebido o codigo de retorno HTTP <codigo>
     And o tempo de resposta deve ser menor que <tempo> segundos
-#    And o campo <position> deve ser atualizado
+    And o campo <position> deve ser atualizado
    		
      Examples: 
      
